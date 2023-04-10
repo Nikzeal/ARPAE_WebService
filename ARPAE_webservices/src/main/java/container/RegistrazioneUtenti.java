@@ -27,7 +27,7 @@ public class RegistrazioneUtenti extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		response.getWriter().append("Ciao cicciaa ").append(request.getContextPath());
+		response.getWriter().append("Ciao ciccia ").append(request.getContextPath());
 	}
 
 	/**

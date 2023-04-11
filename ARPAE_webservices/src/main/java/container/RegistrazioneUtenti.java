@@ -5,13 +5,28 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.PrintWriter;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import classes.QueryHandler;
 
 /**
  * Servlet implementation class RegistrazioneUtenti
  */
+@WebServlet("/RegistrazioneUtenti")
 public class RegistrazioneUtenti extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	String nome;
+	String cognome;
+	String nascita;
+	String username;
+	String email;
+	String password;
+	String key;
+	short verification;
+	String risposta;
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -33,8 +48,77 @@ public class RegistrazioneUtenti extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
+		
+		//output writer
+		PrintWriter out = response.getWriter(); 
+		//input reader
+		BufferedReader in_body = request.getReader();
+		//stringBuilder per costruire una stringa facendo vari append
+		StringBuilder sb = new StringBuilder();
+		String line;
+		String body;
+		
+		//acquisisco la stringa dal body
+		while((line = in_body.readLine()) != null) {
+			sb.append(line);
+		}
+		
+		body = sb.toString();
+		//trsformazione stringa in oggetto json
+		Gson g = new Gson();
+		JsonObject persona = g.fromJson(body, JsonObject.class);
+		//acquisizione valore delle chiavi
+		nome = persona.get("Nome").getAsString();
+		cognome = persona.get("Cognome").getAsString();
+		username = persona.get("Username").getAsString();
+		email = persona.get("Email").getAsString();
+		password = persona.get("Password").getAsString();
+		//pass_encr = password criptata;
+		key = persona.get("key").getAsString();
+		/*if(persona.get("Verification").getAsBoolean()) {
+			verification = 1;
+					
+		}else {
+			verification = 0 ;
+		}*/
+		
+		QueryHandler queryForThis = new QueryHandler();
+		
+		int isPresent = queryForThis.hasUtente(username);
+		
+		switch(isPresent) {
+		
+			case 1:
+				risposta = "utente gia presente";
+				//da trasformare in formato json
+				break;
+			case 0:
+				
+				risposta = "inserimento utente...";
+				//da trasformare in formato json
+				int inserted = queryForThis.inserisciUtente(nome, cognome, username, email, password);
+				
+				if(inserted != -1) {
+					risposta = "utente registrato";
+					//da trasformare in formato json
+				}else {
+					risposta = "errore del database (registrazione utente)";
+					//da trasformare in formato json
+				}
+				break;
+				
+			default:
+				risposta = "errore del database (presenza utente)";
+				//da trasformare in formato json
+				break;
+		}
+		
+		
+		response.addHeader("Access-Control-Allow-Origin", "*");
+		response.addHeader("Access-Control-Allow-Methods", "PUT,POST");
+		
+		out.println(risposta);
+		
 	}
 
 }

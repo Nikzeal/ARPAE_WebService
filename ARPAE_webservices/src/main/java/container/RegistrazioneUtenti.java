@@ -85,39 +85,48 @@ public class RegistrazioneUtenti extends HttpServlet {
 		
 		QueryHandler queryForThis = new QueryHandler();
 		
-		int isPresent = queryForThis.hasUtente(username);
+		int hasUsername = queryForThis.hasUsername(username);
+		int hasEmail = queryForThis.hasEmail(email); //da fare
 		
-		switch(isPresent) {
+		switch(hasUsername) {
 		
 			case 1:
-				risposta = "utente gia presente";
-				//da trasformare in formato json
+				risposta = "username già esistente";
+				
 				break;
 			case 0:
-				
-				risposta = "inserimento utente...";
-				//da trasformare in formato json
-				int inserted = queryForThis.inserisciUtente(nome, cognome, username, email, password);
-				
-				if(inserted != -1) {
-					risposta = "utente registrato";
-					//da trasformare in formato json
+				//da trovare un metodo migliore
+				if(hasEmail != -1) {
+					if(hasEmail == 0) {
+					
+						int inserted = queryForThis.inserisciUtente(nome, cognome, username, email, password);
+						
+						if(inserted != -1) {
+							risposta = "utente registrato";
+						}else {
+							risposta = "errore del database (registrazione utente)";
+						}
+						
+					}else {
+						risposta = "email già esistente";
+					}
+						
 				}else {
-					risposta = "errore del database (registrazione utente)";
-					//da trasformare in formato json
+					risposta = "errore del database (presenza email)";
 				}
+				
 				break;
 				
 			default:
-				risposta = "errore del database (presenza utente)";
-				//da trasformare in formato json
+				risposta = "errore del database (presenza username)";
+				
 				break;
 		}
 		
 		
 		response.addHeader("Access-Control-Allow-Origin", "*");
 		response.addHeader("Access-Control-Allow-Methods", "PUT,POST");
-		
+		//da trasformare in formato json
 		out.println(risposta);
 		
 	}

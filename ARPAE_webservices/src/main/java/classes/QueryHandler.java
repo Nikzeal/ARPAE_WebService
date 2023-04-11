@@ -35,7 +35,7 @@ public class QueryHandler {
 		
 	}
 	
-	public int hasUtente(String username) {
+	public int hasUsername(String username) {
 		
 		establishConnection();
 		String prepared_query = "SELECT * FROM utenti WHERE UT_username = ?";
@@ -61,6 +61,10 @@ public class QueryHandler {
 		
 		
 		
+	}
+	
+	public int hasEmail(String email) {
+		return -1;
 	}
 	
 	public int inserisciUtente(String nome, String cognome, String username, String email, String password) {

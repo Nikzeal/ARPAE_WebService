@@ -97,6 +97,20 @@ public class RegistrazioneUtenti extends HttpServlet{
 	   else
 		   return true;
    }
+   //Password check
+   public boolean isValidPassword(String password) {
+	   if((password == null) || (password.length() < 8))
+		   return false;
+	   else
+		   return true;
+   }
+   //User_key check
+   public boolean isValidUser_Key(String user_key) {
+	   if((user_key == null) || (user_key.length() < 16))
+		   return false;
+	   else
+		   return true;
+   }
    //Empty input check
    public boolean isNotEmpty() {
 	   if((nome == "" ) || (cognome == "" ) || (nascita == "" ) || (username == "" ) || (email == "" ) || (password == "" ) || (confirm_password == "" ) || (user_key == "" ))

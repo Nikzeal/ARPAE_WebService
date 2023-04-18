@@ -16,7 +16,9 @@ public class AccessoUtenti extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     String username = "";
     String password = "";
+    short verification = 0; //Inizializzato a 0 perché non verificato
     String risposta;
+    
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -36,7 +38,7 @@ public class AccessoUtenti extends HttpServlet {
     }
     //Password check
     public boolean isValidPassword(String password) {
-    	if(password.length() <= 8)
+    	if(password.length() < 8)
     		return false;
     	else
     		return true;
@@ -47,6 +49,13 @@ public class AccessoUtenti extends HttpServlet {
  		   return false;
  	   else
  		   return true;	   
+    }
+    //Email verify check
+    public boolean isVerified(short verification) {
+    	if(verification == 0) 
+    		return false;
+    	else
+    		return true;
     }
     
 	/**

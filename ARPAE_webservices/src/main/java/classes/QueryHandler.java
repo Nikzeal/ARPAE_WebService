@@ -7,7 +7,7 @@ import com.mysql.jdbc.Connection;
 
 public class QueryHandler {
 	
-	private static String db_url = "jdbc:mysql://localhost:3306/passaporti-vaccinali";
+	private static String db_url = "jdbc:mysql://localhost:3306/utenti";
     private static String db_driver = "com.mysql.jdbc.Driver";
     private static String db_user = "root";
     private static String db_password = "";

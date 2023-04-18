@@ -14,9 +14,8 @@ import java.io.IOException;
 public class AccessoUtenti extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
-    String username = "";
-    String password = "";
-    short verification = 0; //Inizializzato a 0 perché non verificato
+    String username;
+    String password;
     String risposta;
     
     /**
@@ -24,39 +23,40 @@ public class AccessoUtenti extends HttpServlet {
      */
     public AccessoUtenti() {
         super();
-        // TODO Auto-generated constructor stub
+        
     }
 
-    //METODI CONTROLLO CAMPI
+    
     //Username check
     public boolean isValidUsername(String username) {
     	
-    	if((username == null) || username.contains(" ")) {
+    	if(username == null || username.contains(" ")) {
     		return false;
-    	}else
-    		return true;
+    	}
+    	
+    	return true;
     }
+    
     //Password check
     public boolean isValidPassword(String password) {
-    	if(password.length() < 8)
+ 
+    	if(password.length() < 8) {
     		return false;
-    	else
-    		return true;
+    	}
+    	
+    	return true;
     }
+    
     //Empty input check
     public boolean isNotEmpty() {
- 	   if((username == "") || (password == ""))
+    	
+ 	   if(username.isBlank() || password.isBlank()) {
  		   return false;
- 	   else
- 		   return true;	   
+ 	   }
+ 	   
+ 	   return true;	   
     }
-    //Email verify check
-    public boolean isVerified(short verification) {
-    	if(verification == 0) 
-    		return false;
-    	else
-    		return true;
-    }
+    
     
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)

@@ -54,7 +54,7 @@ public class RegistrazioneUtenti extends HttpServlet{
 
         // schedule the task to run starting now and then every hour...
         timer.schedule(hourlyTask, 0l, 1000*60*60);
-        // TODO Auto-generated constructor stub
+      
     }
     
     public void updateKey(){
@@ -70,53 +70,65 @@ public class RegistrazioneUtenti extends HttpServlet{
     	   }
     	   return sb.toString();
     }
-    //METODI CONTROLLO CAMPI
+    
     //Username check
     public boolean isValidUsername(String username) {
     	
     	if((username == null) || username.contains(" ")) {
     		return false;
-    	}else
-    		return true;
+    	}
+    	
+    	return true;
     }
+    
     //Email check
    public boolean isValidEmail(String email) {
     	
     	String regexPattern = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@" 
     	        + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
     	
-    	if((email == null) || (email.matches(regexPattern) == false))
+    	if((email == null) || (email.matches(regexPattern) == false)) {
     		return false;
-    	else
-    		return true;
+    	}
+    	
+    	return true;
     }
-    //Confirm password check
+   
+   //Confirm password check
    public boolean isValidConfirmPassword() {
-	   if(password != confirm_password)
+	   if(!password.equals(confirm_password)) {
 		   return false;
-	   else
-		   return true;
+   	   }
+	   
+	   return true;
    }
+   
    //Password check
    public boolean isValidPassword(String password) {
-	   if((password == null) || (password.length() < 8))
+	   if(password.isBlank() || (password.length() < 8)) {
 		   return false;
-	   else
-		   return true;
+	   }
+		   
+	   return true;
    }
+   
    //User_key check
    public boolean isValidUser_Key(String user_key) {
-	   if((user_key == null) || (user_key.length() < 16))
+	   if(user_key.isBlank() || (user_key.length() < 16)) {
 		   return false;
-	   else
-		   return true;
+	   }
+	   
+	   return true;
    }
+   
    //Empty input check
    public boolean isNotEmpty() {
-	   if((nome == "" ) || (cognome == "" ) || (nascita == "" ) || (username == "" ) || (email == "" ) || (password == "" ) || (confirm_password == "" ) || (user_key == "" ))
+	   
+	   if(nome.isBlank() || cognome.isBlank() || nascita.isBlank() || username.isBlank() || email.isBlank() || password.isBlank() || confirm_password.isBlank() || user_key.isBlank()) {
 		   return false;
-	   else
-		   return true;	   
+	   }
+	   
+	   return true;	   
    }
     
 	/**
@@ -156,18 +168,11 @@ public class RegistrazioneUtenti extends HttpServlet{
 		username = persona.get("Username").getAsString();
 		email = persona.get("Email").getAsString();
 		password = persona.get("Password").getAsString();
-		
-		//Daniele: aggiunta la conferma password
 		confirm_password = persona.get("Confirm_Password").getAsString();
 		
 		//pass_encr = password criptata;
 		user_key = persona.get("User_key").getAsString();
-		/*if(persona.get("Verification").getAsBoolean()) {
-			verification = 1;
-					
-		}else {
-			verification = 0 ;
-		}*/
+	
 		/* 
 		 * i controlli andranno organizzati cosi:
 		 * se i seguenti controlli passano
@@ -177,7 +182,7 @@ public class RegistrazioneUtenti extends HttpServlet{
 		 * metodo controlloCampiVuoti()
 		 * allora si potra passare al codice successivo
 		 */
-		if(user_key == this.key){
+		if(user_key.equals(this.key)){
 			
 			QueryHandler queryForThis = new QueryHandler();
 			
@@ -187,7 +192,7 @@ public class RegistrazioneUtenti extends HttpServlet{
 			switch(hasUsername) {
 			
 				case 1:
-					risposta = "username gi� esistente";
+					risposta = "username gia esistente";
 					break;
 				case 0:
 					//da trovare un metodo migliore
@@ -202,7 +207,7 @@ public class RegistrazioneUtenti extends HttpServlet{
 								risposta = "errore del database (inserimento utente)";
 							}
 						}else {
-							risposta = "email gi� esistente";
+							risposta = "email gia esistente";
 						}
 					}else {
 						risposta = "errore del database (presenza email)";

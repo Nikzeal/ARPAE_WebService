@@ -121,20 +121,67 @@ public class AccessoUtenti extends HttpServlet {
 				
 				case 1:
 					
+					int checkPass = queryForThis.checkPass(user_id, password);
+					
+					if(checkPass == 1) {
+						
+						int checkVerified = queryForThis.isVerified(user_id);
+						
+						if(checkVerified == 1) {
+							
+							risposta = "password corretta";
+							
+						}else if(checkVerified == 0) {
+							
+							risposta = "email non verificata";
+							
+						}else {
+							risposta = "errore con il database (controllo verifica email)";
+						}
+						
+						
+					}else if (checkPass == 0){
+						
+						risposta = "password errata";
+						
+					}else {
+						risposta = "errore con il database (controllo password)";
+					}
 					break;
 					
 				case 0:
+					risposta = "utente inesistente";
 					break;
 					
 				default:
+					risposta = "errore del database (presenza username)";
 					break;
+				}
 				
 				
-				
-				
+			}else {
+				risposta = "errore nell'input";
 			}
-		
+			
+			response.addHeader("Access-Control-Allow-Origin", "*");
+			response.addHeader("Access-Control-Allow-Methods", "PUT,POST");
+			//da trasformare in formato json
+			/*
+			 * le risposte in formato json conterranno:
+			 * stati (verifica dell'email, andatura della richiesta, correttezza password, controlli sugli input...)
+			 * descrizione
+			 * eventuali dati
+			 */
+			out.println(risposta);
 		
 	}
 
+	
+	
+	
+	
+	
+	
+	
+	
 }

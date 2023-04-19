@@ -222,6 +222,12 @@ public class RegistrazioneUtenti extends HttpServlet{
 		response.addHeader("Access-Control-Allow-Origin", "*");
 		response.addHeader("Access-Control-Allow-Methods", "PUT,POST");
 		//da trasformare in formato json
+		/*
+		 * le risposte in formato json conterranno:
+		 * stati (andatura della richiesta, coincidenza password, controlli sugli input...)
+		 * descrizione
+		 * eventuali dati
+		 */
 		out.println(risposta);
 		
 	}

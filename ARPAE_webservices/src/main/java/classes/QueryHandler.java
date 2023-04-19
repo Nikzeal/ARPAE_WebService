@@ -46,7 +46,7 @@ public class QueryHandler {
 			
 			pr.setString(1, username);
 			ResultSet res = pr.executeQuery();
-			//per controllare se un utente esiste basta vedere il risultato di next(), sarà false se non esistono righe
+			//per controllare se l'username esiste basta vedere il risultato di next(), sarà false se non esistono righe
 			boolean check = res.next();
 			
 			conn.close();
@@ -59,9 +59,33 @@ public class QueryHandler {
 		
 		}
 		
-		
-		
 	}
+	
+	public int hasEmail(String email) {
+		
+		establishConnection();
+		String prepared_query = "SELECT * FROM utenti WHERE UT_email = ?";
+		
+		try(
+			java.sql.PreparedStatement pr = conn.prepareStatement(prepared_query);
+			){
+			
+			pr.setString(1, email);
+			ResultSet res = pr.executeQuery();
+			//per controllare se l'email esiste basta vedere il risultato di next(), sarà false se non esistono righe
+			boolean check = res.next();
+			
+			conn.close();
+			return check ? 1 : 0; //se check true returna 1 altrimenti 0
+		
+		}catch(SQLException e){
+			
+			System.out.println(e.getLocalizedMessage());
+			return -1;
+		
+		}
+	}
+	
 	
 	public int checkPass(int user_id, String password) {
 		
@@ -69,16 +93,35 @@ public class QueryHandler {
 		String prepared_query = "SELECT UT_password FROM utenti WHERE UT_id = ?";
 		
 		try(
-				java.sql.PreparedStatement pr = conn.prepareStatement(prepared_query);
-				){
 				
+				java.sql.PreparedStatement pr = conn.prepareStatement(prepared_query);
+				
+				){
+
+			 
 				pr.setInt(1, user_id);
 				ResultSet res = pr.executeQuery();
-				//todo prendere il risultato
+				if(res.next()) {
+					
+					String pass = res.getString("UT_password");
+					conn.close();
+					
+					if(password.equals(pass)){
+						
+						return 1;
+						
+					}else {
+						return 0;
+					}
+					
+				}else {
+					conn.close();
+					return -1;
+				}
 				
-				conn.close();
-				//todo returnare il check della password
-				/**/ return 0; /**/
+				
+				
+
 			}catch(SQLException e){
 				
 				System.out.println(e.getLocalizedMessage());
@@ -98,11 +141,17 @@ public class QueryHandler {
 			
 			pr.setString(1, username);
 			ResultSet res = pr.executeQuery();
-			//todo prendere il risultato
+			if(res.next()) {
+				int user_id = res.getInt("UT_id");
+				conn.close();
+				return user_id;
+			}else {
+				conn.close();
+				return -1;
+			}
 			
-			conn.close();
-			//todo returnare l'id
-			/**/ return 0; /**/
+			
+			
 		}catch(SQLException e){
 			
 			System.out.println(e.getLocalizedMessage());
@@ -111,30 +160,7 @@ public class QueryHandler {
 		}
 	}
 	
-	public int hasEmail(String email) {
-		
-		establishConnection();
-		String prepared_query = "SELECT * FROM utenti WHERE UT_email = ?";
-		
-		try(
-			java.sql.PreparedStatement pr = conn.prepareStatement(prepared_query);
-			){
-			
-			pr.setString(1, email);
-			ResultSet res = pr.executeQuery();
-			//per controllare se un utente esiste basta vedere il risultato di next(), sarà false se non esistono righe
-			boolean check = res.next();
-			
-			conn.close();
-			return check ? 1 : 0; //se check true returna 1 altrimenti 0
-		
-		}catch(SQLException e){
-			
-			System.out.println(e.getLocalizedMessage());
-			return -1;
-		
-		}
-	}
+	
 	
 	public int inserisciUtente(String nome, String cognome, String username, String email, String password) {
 		
@@ -170,7 +196,7 @@ public class QueryHandler {
 	public int updateVerification(short verification, String user_id) {
 		
 		establishConnection();
-		String prepared_query = "UPDATE soggetti SET UT_verification = ? WHERE  UT_id = ?";
+		String prepared_query = "UPDATE utenti SET UT_verification = ? WHERE  UT_id = ?";
 		
 		try(
 				java.sql.PreparedStatement pr = conn.prepareStatement(prepared_query);
@@ -192,6 +218,40 @@ public class QueryHandler {
 			
 			}
 		
+		
+		
+	}
+	
+	public int isVerified(int user_id) {
+		
+		establishConnection();
+		String prepared_query = "SELECT UT_verification FROM utenti WHERE  UT_id = ?";
+		
+		try(
+				java.sql.PreparedStatement pr = conn.prepareStatement(prepared_query);
+				){
+				
+				
+				pr.setInt(1, user_id);
+				
+				ResultSet res = pr.executeQuery();
+				
+				if(res.next()) {
+					short verification = res.getShort("UT_verification");
+					conn.close();
+					return verification;
+				}else {
+					conn.close();
+					return -1;
+				}
+				
+			
+			}catch(SQLException e){
+				
+				System.out.println(e.getLocalizedMessage());
+				return -1;
+			
+			}
 		
 		
 	}

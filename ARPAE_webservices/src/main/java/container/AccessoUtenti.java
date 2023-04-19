@@ -5,7 +5,15 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.PrintWriter;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+import classes.QueryHandler;
 
 /**
  * Servlet implementation class AccessoUtenti
@@ -28,7 +36,7 @@ public class AccessoUtenti extends HttpServlet {
 
     
     //Username check
-    public boolean isValidUsername(String username) {
+    public boolean isValidUsername() {
     	
     	if(username == null || username.contains(" ")) {
     		return false;
@@ -38,7 +46,7 @@ public class AccessoUtenti extends HttpServlet {
     }
     
     //Password check
-    public boolean isValidPassword(String password) {
+    public boolean isValidPassword() {
  
     	if(password.length() < 8) {
     		return false;
@@ -48,7 +56,7 @@ public class AccessoUtenti extends HttpServlet {
     }
     
     //Empty input check
-    public boolean isNotEmpty() {
+    public boolean isNotBlank() {
     	
  	   if(username.isBlank() || password.isBlank()) {
  		   return false;
@@ -71,22 +79,62 @@ public class AccessoUtenti extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		/*IMPLEMENTAZIONE METODO DO POST
-		 * Output writer - input reader
-		 * Acquisizione valore campi del form
-		 * manipolazione stringa del messaggio
-		 */
+			PrintWriter out = response.getWriter(); 
+			//input reader
+			BufferedReader in_body = request.getReader();
+			//stringBuilder per costruire una stringa dal messaggio in formato json
+			StringBuilder sb = new StringBuilder();
+			String line;
+			String body;
+			
+			while((line = in_body.readLine()) != null) {
+				sb.append(line);
+			}
+			
+			body = sb.toString();
+			
+			Gson g = new Gson();
+			JsonObject user = g.fromJson(body, JsonObject.class);
+			
+			username = user.get("Username").getAsString();
+			password = user.get("Password").getAsString();
 		
 		/* i controlli andranno organizzati cosi:
 			 * se i seguenti controlli passano
 			 * metodo controlloValiditaPassword()
 			 * metodo controlloValiditaUsername()
-			 * metodo ControlloVerificaMail()
 			 * metodo controlloCampiVuoti()
 			 * allora si potra passare al codice successivo
+			 * poi verra controllata la verifica della email: metodo isVerified()
 			 */
+			
+			if(isNotBlank() && isValidUsername() && isValidPassword()) {
+				
+				
+				QueryHandler queryForThis = new QueryHandler();
+				
+				int hasUsername = queryForThis.hasUsername(username);
+				
+				int user_id = queryForThis.getUserId(username);
+				
+				switch(hasUsername) {
+				
+				case 1:
+					
+					break;
+					
+				case 0:
+					break;
+					
+				default:
+					break;
+				
+				
+				
+				
+			}
 		
-		//Controlli con database
+		
 	}
 
 }

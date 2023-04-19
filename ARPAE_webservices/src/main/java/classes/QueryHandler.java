@@ -63,6 +63,54 @@ public class QueryHandler {
 		
 	}
 	
+	public int checkPass(int user_id, String password) {
+		
+		establishConnection();
+		String prepared_query = "SELECT UT_password FROM utenti WHERE UT_id = ?";
+		
+		try(
+				java.sql.PreparedStatement pr = conn.prepareStatement(prepared_query);
+				){
+				
+				pr.setInt(1, user_id);
+				ResultSet res = pr.executeQuery();
+				//todo prendere il risultato
+				
+				conn.close();
+				//todo returnare il check della password
+				/**/ return 0; /**/
+			}catch(SQLException e){
+				
+				System.out.println(e.getLocalizedMessage());
+				return -1;
+			
+			}
+	}
+	
+	public int getUserId(String username) {
+		
+		establishConnection();
+		String prepared_query = "SELECT UT_id FROM utenti WHERE UT_username = ?";
+		
+		try(
+			java.sql.PreparedStatement pr = conn.prepareStatement(prepared_query);
+			){
+			
+			pr.setString(1, username);
+			ResultSet res = pr.executeQuery();
+			//todo prendere il risultato
+			
+			conn.close();
+			//todo returnare l'id
+			/**/ return 0; /**/
+		}catch(SQLException e){
+			
+			System.out.println(e.getLocalizedMessage());
+			return -1;
+		
+		}
+	}
+	
 	public int hasEmail(String email) {
 		
 		establishConnection();

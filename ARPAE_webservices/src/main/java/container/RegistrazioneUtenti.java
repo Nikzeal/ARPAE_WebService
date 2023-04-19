@@ -72,7 +72,7 @@ public class RegistrazioneUtenti extends HttpServlet{
     }
     
     //Username check
-    public boolean isValidUsername(String username) {
+    public boolean isValidUsername() {
     	
     	if((username == null) || username.contains(" ")) {
     		return false;
@@ -82,7 +82,7 @@ public class RegistrazioneUtenti extends HttpServlet{
     }
     
     //Email check
-   public boolean isValidEmail(String email) {
+   public boolean isValidEmail() {
     	
     	String regexPattern = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@" 
     	        + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
@@ -95,7 +95,7 @@ public class RegistrazioneUtenti extends HttpServlet{
     }
    
    //Confirm password check
-   public boolean isValidConfirmPassword() {
+   public boolean isConfirmedPassword() {
 	   if(!password.equals(confirm_password)) {
 		   return false;
    	   }
@@ -104,7 +104,7 @@ public class RegistrazioneUtenti extends HttpServlet{
    }
    
    //Password check
-   public boolean isValidPassword(String password) {
+   public boolean isValidPassword() {
 	   if(password.isBlank() || (password.length() < 8)) {
 		   return false;
 	   }
@@ -113,7 +113,7 @@ public class RegistrazioneUtenti extends HttpServlet{
    }
    
    //User_key check
-   public boolean isValidUser_Key(String user_key) {
+   public boolean isValidUser_Key() {
 	   if(user_key.isBlank() || (user_key.length() < 16)) {
 		   return false;
 	   }
@@ -122,7 +122,7 @@ public class RegistrazioneUtenti extends HttpServlet{
    }
    
    //Empty input check
-   public boolean isNotEmpty() {
+   public boolean isNotBlank() {
 	   
 	   if(nome.isBlank() || cognome.isBlank() || nascita.isBlank() || username.isBlank() || email.isBlank() || password.isBlank() || confirm_password.isBlank() || user_key.isBlank()) {
 		   return false;
@@ -153,7 +153,7 @@ public class RegistrazioneUtenti extends HttpServlet{
 		String line;
 		String body;
 		
-		//acquisisco la stringa dal body
+		//acquisizione stringa dal body
 		while((line = in_body.readLine()) != null) {
 			sb.append(line);
 		}
@@ -161,65 +161,62 @@ public class RegistrazioneUtenti extends HttpServlet{
 		body = sb.toString();
 		//trsformazione stringa in oggetto json
 		Gson g = new Gson();
-		JsonObject persona = g.fromJson(body, JsonObject.class);
+		JsonObject user = g.fromJson(body, JsonObject.class);
 		//acquisizione valore delle chiavi
-		nome = persona.get("Nome").getAsString();
-		cognome = persona.get("Cognome").getAsString();
-		username = persona.get("Username").getAsString();
-		email = persona.get("Email").getAsString();
-		password = persona.get("Password").getAsString();
-		confirm_password = persona.get("Confirm_Password").getAsString();
-		
+		nome = user.get("Nome").getAsString();
+		cognome = user.get("Cognome").getAsString();
+		username = user.get("Username").getAsString();
+		email = user.get("Email").getAsString();
+		password = user.get("Password").getAsString();
+		confirm_password = user.get("Confirm_Password").getAsString();
 		//pass_encr = password criptata;
-		user_key = persona.get("User_key").getAsString();
+		user_key = user.get("User_key").getAsString();
 	
-		/* 
-		 * i controlli andranno organizzati cosi:
-		 * se i seguenti controlli passano
-		 * metodo controlloValiditaPassword()
-		 * metodo controlloValiditaUsername()
-		 * metodo ControlloValiditaEmail()
-		 * metodo controlloCampiVuoti()
-		 * allora si potra passare al codice successivo
-		 */
-		if(user_key.equals(this.key)){
+		//controlli lato server
+		if(isNotBlank() && isValidUsername() && isValidPassword() && isValidEmail() && isConfirmedPassword() && isValidUser_Key() ) {
 			
-			QueryHandler queryForThis = new QueryHandler();
-			
-			int hasUsername = queryForThis.hasUsername(username);
-			int hasEmail = queryForThis.hasEmail(email); //da fare
-			
-			switch(hasUsername) {
-			
-				case 1:
-					risposta = "username gia esistente";
-					break;
-				case 0:
-					//da trovare un metodo migliore
-					if(hasEmail != -1) {
-						if(hasEmail == 0) {
-						
-							int inserted = queryForThis.inserisciUtente(nome, cognome, username, email, password);
+		
+			if(user_key.equals(this.key)){
+				
+				QueryHandler queryForThis = new QueryHandler();
+				
+				int hasUsername = queryForThis.hasUsername(username);
+				int hasEmail = queryForThis.hasEmail(email); 
+				
+				switch(hasUsername) {
+				
+					case 1:
+						risposta = "username gia esistente";
+						break;
+					case 0:
+						//da trovare un metodo migliore
+						if(hasEmail != -1) {
+							if(hasEmail == 0) {
 							
-							if(inserted != -1) {
-								risposta = "utente registrato";
+								int inserted = queryForThis.inserisciUtente(nome, cognome, username, email, password);
+								
+								if(inserted != -1) {
+									risposta = "utente registrato";
+								}else {
+									risposta = "errore del database (inserimento utente)";
+								}
 							}else {
-								risposta = "errore del database (inserimento utente)";
+								risposta = "email gia esistente";
 							}
 						}else {
-							risposta = "email gia esistente";
+							risposta = "errore del database (presenza email)";
 						}
-					}else {
-						risposta = "errore del database (presenza email)";
-					}
-					break;
-					
-				default:
-					risposta = "errore del database (presenza username)";
-					break;
+						break;
+						
+					default:
+						risposta = "errore del database (presenza username)";
+						break;
+				}
+			}else {
+				risposta = "Non puo accedere al servizio di registrazione con questa chiave!";
 			}
 		}else {
-			risposta = "Non puo accedere al servizio di registrazione con questa chiave!";
+			risposta = "errore nell'input";
 		}
 		
 		response.addHeader("Access-Control-Allow-Origin", "*");

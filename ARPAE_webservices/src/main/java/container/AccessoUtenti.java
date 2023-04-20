@@ -9,10 +9,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import classes.JwtGenerator;
 import classes.QueryHandler;
 
 /**
@@ -98,16 +102,13 @@ public class AccessoUtenti extends HttpServlet {
 			
 			username = user.get("Username").getAsString();
 			password = user.get("Password").getAsString();
-		
-		/* i controlli andranno organizzati cosi:
-			 * se i seguenti controlli passano
-			 * metodo controlloValiditaPassword()
-			 * metodo controlloValiditaUsername()
-			 * metodo controlloCampiVuoti()
-			 * allora si potra passare al codice successivo
-			 * poi verra controllata la verifica della email: metodo isVerified()
-			 */
 			
+			JsonObject jwtFormat = new JsonObject();
+			jwtFormat.addProperty("sub", username);
+			jwtFormat.addProperty("aud", "*");
+			
+			
+			//controlli input
 			if(isNotBlank() && isValidUsername() && isValidPassword()) {
 				
 				
@@ -119,43 +120,65 @@ public class AccessoUtenti extends HttpServlet {
 				
 				switch(hasUsername) {
 				
-				case 1:
-					
-					int checkPass = queryForThis.checkPass(user_id, password);
-					
-					if(checkPass == 1) {
+					case 1:
 						
-						int checkVerified = queryForThis.isVerified(user_id);
+						int checkPass = queryForThis.checkPass(user_id, password);
 						
-						if(checkVerified == 1) {
+						if(checkPass == 1) {
 							
-							risposta = "password corretta";
+							int checkVerified = queryForThis.isVerified(user_id);
 							
-						}else if(checkVerified == 0) {
+							if(checkVerified == 1) {
+								
+								risposta = "password corretta";
+								
+								//generazione jwt per la sessione
+								try {
+									
+									JwtGenerator generator = new JwtGenerator();
+									Map<String, String> claims = new HashMap<>();
+									
+									jwtFormat.keySet().forEach(keyStr ->
+								    {
+								        String keyvalue = jwtFormat.get(keyStr).getAsString();
+								        claims.put(keyStr, keyvalue);
+								      
+								    });
+									
+									String token = generator.generateJwt(claims);
+									risposta = token;
+									
+								} catch (Exception e) {
+									
+									e.printStackTrace();
+								}
+								
+								
+							}else if(checkVerified == 0) {
+								
+								risposta = "email non verificata";
+								
+							}else {
+								risposta = "errore con il database (controllo verifica email)";
+							}
 							
-							risposta = "email non verificata";
+							
+						}else if (checkPass == 0){
+							
+							risposta = "password errata";
 							
 						}else {
-							risposta = "errore con il database (controllo verifica email)";
+							risposta = "errore con il database (controllo password)";
 						}
+						break;
 						
+					case 0:
+						risposta = "utente inesistente";
+						break;
 						
-					}else if (checkPass == 0){
-						
-						risposta = "password errata";
-						
-					}else {
-						risposta = "errore con il database (controllo password)";
-					}
-					break;
-					
-				case 0:
-					risposta = "utente inesistente";
-					break;
-					
-				default:
-					risposta = "errore del database (presenza username)";
-					break;
+					default:
+						risposta = "errore del database (presenza username)";
+						break;
 				}
 				
 				

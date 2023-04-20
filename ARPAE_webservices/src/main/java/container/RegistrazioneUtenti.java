@@ -26,7 +26,6 @@ public class RegistrazioneUtenti extends HttpServlet{
 	private static final long serialVersionUID = 1L;
 	String nome;
 	String cognome;
-	String nascita;
 	String username;
 	String email;
 	String password;
@@ -44,7 +43,8 @@ public class RegistrazioneUtenti extends HttpServlet{
     public RegistrazioneUtenti() {
         super();
         this.key = randomString(16);
-        Timer timer = new Timer ();
+        System.out.println(this.key);
+        /*Timer timer = new Timer ();
         TimerTask hourlyTask = new TimerTask () {
             @Override
             public void run () {
@@ -53,7 +53,7 @@ public class RegistrazioneUtenti extends HttpServlet{
         };
 
         // schedule the task to run starting now and then every hour...
-        timer.schedule(hourlyTask, 0l, 1000*60*60);
+        timer.schedule(hourlyTask, 0l, 1000*60*60);*/
       
     }
     
@@ -124,7 +124,7 @@ public class RegistrazioneUtenti extends HttpServlet{
    //Empty input check
    public boolean isNotBlank() {
 	   
-	   if(nome.isBlank() || cognome.isBlank() || nascita.isBlank() || username.isBlank() || email.isBlank() || password.isBlank() || confirm_password.isBlank() || user_key.isBlank()) {
+	   if(nome.isBlank() || cognome.isBlank() || username.isBlank() || email.isBlank() || password.isBlank() || confirm_password.isBlank() || user_key.isBlank()) {
 		   return false;
 	   }
 	   
@@ -144,6 +144,8 @@ public class RegistrazioneUtenti extends HttpServlet{
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
+		response.addHeader("Access-Control-Allow-Origin", "*");
+		response.addHeader("Access-Control-Allow-Methods", "PUT,POST");
 		//output writer
 		PrintWriter out = response.getWriter(); 
 		//input reader
@@ -168,7 +170,7 @@ public class RegistrazioneUtenti extends HttpServlet{
 		username = user.get("Username").getAsString();
 		email = user.get("Email").getAsString();
 		password = user.get("Password").getAsString();
-		confirm_password = user.get("Confirm_Password").getAsString();
+		confirm_password = user.get("Confirm_pass").getAsString();
 		//pass_encr = password criptata;
 		user_key = user.get("User_key").getAsString();
 	
@@ -189,7 +191,7 @@ public class RegistrazioneUtenti extends HttpServlet{
 						risposta = "username gia esistente";
 						break;
 					case 0:
-						//da trovare un metodo migliore
+						
 						if(hasEmail != -1) {
 							if(hasEmail == 0) {
 							
@@ -219,8 +221,8 @@ public class RegistrazioneUtenti extends HttpServlet{
 			risposta = "errore nell'input";
 		}
 		
-		response.addHeader("Access-Control-Allow-Origin", "*");
-		response.addHeader("Access-Control-Allow-Methods", "PUT,POST");
+	
+		
 		//da trasformare in formato json
 		/*
 		 * le risposte in formato json conterranno:

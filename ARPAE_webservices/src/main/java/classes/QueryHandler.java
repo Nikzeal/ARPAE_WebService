@@ -4,14 +4,15 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import com.mysql.jdbc.Connection;
+import com.mysql.jdbc.PreparedStatement;
 
 public class QueryHandler {
 	
-	private static String db_url = "jdbc:mysql://localhost:3306/utenti";
+	private static String db_url = "jdbc:mysql://localhost:3306/zucco_arpae";
     private static String db_driver = "com.mysql.jdbc.Driver";
     private static String db_user = "root";
     private static String db_password = "";
-    private Connection conn;
+    private java.sql.Connection conn;
   
 
 	public QueryHandler() {
@@ -28,7 +29,7 @@ public class QueryHandler {
 	public void establishConnection() {
 		
 		try{
-			conn = (Connection) DriverManager.getConnection(db_url, db_user, db_password); 
+			conn = DriverManager.getConnection(db_url, db_user, db_password); 
 		}catch(SQLException e){
 			System.err.println(e.getLocalizedMessage());
 		}
@@ -165,7 +166,7 @@ public class QueryHandler {
 	public int inserisciUtente(String nome, String cognome, String username, String email, String password) {
 		
 		establishConnection();
-		String prepared_query = "INSERT INTO soggetti (UT_nome, UT_cognome, UT_username, UT_email, UT_password) VALUES (?, ?, ?, ?, ?)";
+		String prepared_query = "INSERT INTO utenti (UT_nome, UT_cognome, UT_username, UT_email, UT_password, UT_verification) VALUES (?, ?, ?, ?, ?, 0)";
 		
 		try(
 				java.sql.PreparedStatement pr = conn.prepareStatement(prepared_query);

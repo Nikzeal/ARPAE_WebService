@@ -6,10 +6,7 @@
     <servlet-name>RegistrazioneUtenti</servlet-name>
     <servlet-class>container.RegistrazioneUtenti</servlet-class>
   </servlet>
-  <servlet-mapping>
-    <servlet-name>RegistrazioneUtenti</servlet-name>
-    <url-pattern>/RegistrazioneUtenti</url-pattern>
-  </servlet-mapping>
+  
   <display-name>ARPAE_webservices</display-name>
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
@@ -25,8 +22,5 @@
     <servlet-name>AccessoUtenti</servlet-name>
     <servlet-class>container.AccessoUtenti</servlet-class>
   </servlet>
-  <servlet-mapping>
-    <servlet-name>AccessoUtenti</servlet-name>
-    <url-pattern>/AccessoUtenti</url-pattern>
-  </servlet-mapping>
+  
 </web-app>

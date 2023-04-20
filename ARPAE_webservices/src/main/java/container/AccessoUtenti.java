@@ -83,6 +83,9 @@ public class AccessoUtenti extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
+		
+			response.addHeader("Access-Control-Allow-Origin", "*");
+			response.addHeader("Access-Control-Allow-Methods", "PUT,POST");
 			PrintWriter out = response.getWriter(); 
 			//input reader
 			BufferedReader in_body = request.getReader();
@@ -186,8 +189,7 @@ public class AccessoUtenti extends HttpServlet {
 				risposta = "errore nell'input";
 			}
 			
-			response.addHeader("Access-Control-Allow-Origin", "*");
-			response.addHeader("Access-Control-Allow-Methods", "PUT,POST");
+			
 			//da trasformare in formato json
 			/*
 			 * le risposte in formato json conterranno:

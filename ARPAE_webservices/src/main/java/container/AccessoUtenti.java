@@ -2,6 +2,7 @@ package container;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -29,6 +30,7 @@ public class AccessoUtenti extends HttpServlet {
     String username;
     String password;
     String risposta;
+    private String jwtToken;
     
     /**
      * @see HttpServlet#HttpServlet()
@@ -75,7 +77,34 @@ public class AccessoUtenti extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+		/*
+		 * per testing
+		JsonObject jwtFormat = new JsonObject();
+		jwtFormat.addProperty("sub", "");
+		jwtFormat.addProperty("aud", "*");
+		try {
+			
+			JwtGenerator generator = new JwtGenerator();
+			Map<String, String> claims = new HashMap<>();
+			
+			jwtFormat.keySet().forEach(keyStr ->
+		    {
+		        String keyvalue = jwtFormat.get(keyStr).getAsString();
+		        claims.put(keyStr, keyvalue);
+		      
+		    });
+			
+			String token = generator.generateJwt(claims);
+			risposta = token;
+			
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+		}
+		
+		Cookie jwt = new Cookie("LOGIN_INFO", risposta);
+		response.addCookie(jwt);
+		response.getWriter().append(risposta);*/
 	}
 
 	/**
@@ -83,7 +112,7 @@ public class AccessoUtenti extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		
+			
 			response.addHeader("Access-Control-Allow-Origin", "*");
 			response.addHeader("Access-Control-Allow-Methods", "PUT,POST");
 			PrintWriter out = response.getWriter(); 
@@ -109,7 +138,9 @@ public class AccessoUtenti extends HttpServlet {
 			JsonObject jwtFormat = new JsonObject();
 			jwtFormat.addProperty("sub", username);
 			jwtFormat.addProperty("aud", "*");
-			
+			/*
+			 * valida del JWT
+			 */
 			
 			//controlli input
 			if(isNotBlank() && isValidUsername() && isValidPassword()) {
@@ -148,8 +179,8 @@ public class AccessoUtenti extends HttpServlet {
 								      
 								    });
 									
-									String token = generator.generateJwt(claims);
-									risposta = token;
+									jwtToken = generator.generateJwt(claims);
+									risposta = "autenticazione avvenuta";
 									
 								} catch (Exception e) {
 									
@@ -197,6 +228,8 @@ public class AccessoUtenti extends HttpServlet {
 			 * descrizione
 			 * eventuali dati
 			 */
+			Cookie jwt = new Cookie("LOGIN_INFO", jwtToken);
+			response.addCookie(jwt);
 			out.println(risposta);
 		
 	}
